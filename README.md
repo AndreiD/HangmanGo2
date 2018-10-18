@@ -65,11 +65,13 @@ if you're using windows, replace client & server with client.exe & server.exe
 - more testing (gomock) & coverage: coverage: 58.3% of statements (server)
 - better error handling
 - persistance
-- benchmarking
-- integration with CircleCi
+- benchmarking (maybe user https://github.com/shafreeck/fperf ?)
+- integration with CircleCI
 
 ### About:
 
-hanging art done by krasi-georgiev
+original engine idea & hanging art done by krasi-georgievor miketmoore (not clear)
+cobra cli idea by Cityhunteur
+custom words are animals, found somewhere on github
 
 ### License: MIT
