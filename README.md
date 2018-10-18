@@ -19,13 +19,13 @@ Flags:
   -h, --help   help for Hangman
   ~~~~
 
-### "Arhitecture"
+### The "Arhitecture" :)
 
 - gRPC (why: since it doesn't involve any web interface, gRPC is currently the best)
 - Server: keeps track of the games
 - Client: Cobra CLI
 - TSL certificates
-- Authentication
+- Authentication with username & password
 
 Api is definded in the package "api"
 
@@ -40,6 +40,13 @@ $ openssl req -new -x509 -sha256 -key server.key -out server.crt -days 365
 $ openssl req -new -sha256 -key server.key -outserver.csr
 $ openssl x509 -req -sha256 -in server.csr -signkey server.key -out server.crt -days 365
 ~~~~
+
+#### Test it:
+
+~~~~
+go test -timeout 30s github.com\AndreiD\HangmanGo2\server -coverprofile=path_to\go-code-cover
+~~~~
+
 
 #### Run it:
 (if you're using windows, replace client & server with client.exe & server.exe)
