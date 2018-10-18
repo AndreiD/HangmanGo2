@@ -49,13 +49,16 @@ go test -timeout 30s github.com\AndreiD\HangmanGo2\server -coverprofile=path_to\
 
 
 #### Run it:
-(if you're using windows, replace client & server with client.exe & server.exe)
 
+~~~~
 in the server run:
 go build -o server; ./server
 
 in the client
 go build -o client; ./server
+~~~~
+
+if you're using windows, replace client & server with client.exe & server.exe
 
 ### Todo://
 
