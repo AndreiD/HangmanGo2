@@ -1,0 +1,11 @@
+# builds
+*.exe
+/build
+
+# server certificates
+server.csr
+server.key
+
+# others
+.idea/
+*.code-workspace

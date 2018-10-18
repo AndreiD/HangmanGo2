@@ -1,0 +1,40 @@
+syntax = "proto3";
+package api;
+
+// Hangman Server
+service Hangman {
+	rpc NewGame(GameRequest) returns (Game){};
+	rpc ListGames(GameRequest) returns (GameArray){};
+	rpc ResumeGame(GameRequest) returns (Game){};
+	rpc SaveGame(GameRequest) returns (Game){};
+	rpc GuessLetter(GuessRequest) returns (Game){};
+}
+
+// Game Requests
+message GameRequest {
+	int32 Id = 1;
+	int32 RetryLimit=2;
+}
+
+// You can have more games going on
+message GameArray {
+	repeated Game Game=1;
+}
+
+// Games variables
+message Game{
+	int32 		Id = 1;
+	int32 		RetryLimit=2;
+	int32 		RetryLeft=3;
+	string 		Word=4;
+	string 		WordMasked=5;
+	repeated 	GuessRequest IncorrectGuesses=6;
+	bool 			Status=7;
+}
+
+
+// Requesting a guess
+message GuessRequest {
+	int32 	GameID = 1;
+	string 	Letter = 2;
+}

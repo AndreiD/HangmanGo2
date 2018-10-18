@@ -1,0 +1,10 @@
+{
+  "port" : 1234,
+  "hostname" : "localhost",
+  "environment": "debug",
+  "game_difficulty": 6,
+  "auth":{
+    "username":"andy",
+    "password":"2k3jfeij324fds2!2q433@#$3"
+  }
+}
