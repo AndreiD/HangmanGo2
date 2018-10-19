@@ -13,7 +13,7 @@ Available Commands:
   help        Help about any command
   listGames   Shows your saved games
   newGame     Starts a new game
-  resumeGame  Resums a gamewith id.
+  resumeGame  Resumes a game with id.
 
 Flags:
   -h, --help   help for Hangman
