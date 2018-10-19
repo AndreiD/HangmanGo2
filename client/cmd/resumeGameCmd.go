@@ -16,8 +16,8 @@ var gameid string
 // resumeGameCmd represents the resumeGame command
 var resumeGameCmd = &cobra.Command{
 	Use:   "resumeGame",
-	Short: "Resums a gamewith id.",
-	Long:  `resums a game with id.`,
+	Short: "Resumes a game with id.",
+	Long:  `Resumes a game with id.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		// check if the gameid was passed as a flag
