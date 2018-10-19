@@ -24,19 +24,20 @@ func (s *hangman) NewGame(ctx context.Context, r *api.GameRequest) (*api.Game, e
 	}
 	// pick a random word
 	word, err := pickRandomWord("wordlist.txt")
+	fmt.Printf("The word for this game is %s \n", word)
 	if err != nil {
 		return nil, fmt.Errorf("could not pick a word %s", err)
 	}
 	wordMAsked := strings.Repeat("_", utf8.RuneCountInString(word))
+	fmt.Printf("Word Masked is %s \n", wordMAsked)
 	GameID := int32(len(s.game))
 
 	if GameID == 0 {
-		s.game = append(s.game, &api.Game{Id: 0, Status: true})
+		s.game = append(s.game, &api.Game{Id: 0, Status: "ongoing"})
 		GameID++
 	}
-	s.game = append(s.game, &api.Game{Id: GameID, Word: word, WordMasked: wordMAsked, RetryLimit: r.RetryLimit, RetryLeft: r.RetryLimit, Status: true})
+	s.game = append(s.game, &api.Game{Id: GameID, Word: word, WordMasked: wordMAsked, RetryLimit: r.RetryLimit, RetryLeft: r.RetryLimit, Status: "ongoing", PlayerId: r.PlayerId})
 	g := *s.game[GameID]
-	g.Word = ""
 	return &g, nil
 }
 
@@ -52,17 +53,17 @@ func (s *hangman) ListGames(context.Context, *api.GameRequest) (*api.GameArray, 
 
 // ResumeGame resumes the game
 func (s *hangman) ResumeGame(ctx context.Context, r *api.GameRequest) (*api.Game, error) {
+
 	if r.Id > 0 && int32(len(s.game)) > r.Id {
 		if s.game[r.Id].RetryLeft < 1 {
 			return nil, errors.New("This game is over")
 		}
-		if s.game[r.Id].Status {
-			return nil, errors.New("Game is played by someone else")
+		if s.game[r.Id].Status == "won" || s.game[r.Id].Status == "lost" {
+			return nil, errors.New("you can't resume a game that ended")
 		}
 
-		s.game[r.Id].Status = true
+		s.game[r.Id].Status = "ongoing"
 		d := *s.game[r.Id]
-		d.Word = ""
 		return &d, nil
 	}
 	return nil, errors.New("Invalid Game ID")
@@ -72,9 +73,8 @@ func (s *hangman) ResumeGame(ctx context.Context, r *api.GameRequest) (*api.Game
 func (s *hangman) SaveGame(ctx context.Context, r *api.GameRequest) (*api.Game, error) {
 
 	if r.Id > 0 && int32(len(s.game)) > r.Id {
-		s.game[r.Id].Status = false
+		s.game[r.Id].Status = "ongoing"
 		gg := *s.game[r.Id]
-		gg.Word = ""
 		return &gg, nil
 	}
 	return nil, errors.New("Invalid Game ID")
@@ -84,13 +84,15 @@ func (s *hangman) SaveGame(ctx context.Context, r *api.GameRequest) (*api.Game, 
 func (s *hangman) GuessLetter(ctx context.Context, r *api.GuessRequest) (*api.Game, error) {
 
 	if r.GameID > 0 && int32(len(s.game)) > r.GameID {
+
+		// convert letter to lowercase
 		r.Letter = strings.ToLower(r.Letter)
 		g := s.game[r.GameID]
 		if g.RetryLeft < 1 {
-			return nil, errors.New("This game is Over")
+			return nil, errors.New("This game is OVER")
 		}
 
-		for k, v := range g.Word { // expose all letter occurencies
+		for k, v := range g.Word {
 			if v == rune(r.Letter[0]) {
 				g.WordMasked = g.WordMasked[:k] + r.Letter + g.WordMasked[k+1:]
 			}
@@ -100,18 +102,15 @@ func (s *hangman) GuessLetter(ctx context.Context, r *api.GuessRequest) (*api.Ga
 			for _, v := range g.IncorrectGuesses {
 				if r.Letter == v.Letter {
 					contains = true
-				} else {
-
 				}
 			}
-			if !contains {
+			if contains == false {
 				g.IncorrectGuesses = append(g.IncorrectGuesses, &api.GuessRequest{Letter: r.Letter})
 				g.RetryLeft = g.RetryLeft - 1
 			}
 		}
-		gg := *g     // need to dereference so we don't change the original struct
-		gg.Word = "" // don't sent the naked word to the client , to avoid cheating clients :)
-		return &gg, nil
+
+		return g, nil
 	}
 	return nil, errors.New("Invalid Game ID")
 }
@@ -128,5 +127,6 @@ func pickRandomWord(filename string) (string, error) {
 	rand.Seed(time.Now().UnixNano())
 	randInt := rand.Intn(len(lines))
 
-	return lines[randInt], nil
+	// returns the lowercase word
+	return strings.TrimSpace(strings.ToLower(lines[randInt])), nil
 }

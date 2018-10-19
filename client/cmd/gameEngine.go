@@ -23,7 +23,9 @@ func OnGoingGame(game *api.Game) {
 		if utils.IsLetter(letter) {
 			output, err := GuessLetter(hangmanClient, game, letter)
 			if err != nil {
+				// should move them away from errors!
 				checkIfYouLost(err)
+				checkIfYouWin(err)
 				fmt.Println(err)
 			}
 			// save the game on errors
@@ -59,11 +61,11 @@ func GuessLetter(client api.HangmanClient, g *api.Game, l string) (string, error
 
 		//refactor this to a normal message, not error
 		if gg.RetryLeft < 1 {
-			return "", errors.New("You Lost")
+			return "", errors.New("You Lost. Correct word was: " + g.Word)
 		}
 
 		if strings.Index(gg.WordMasked, "_") == -1 {
-			return "", fmt.Errorf("Correct word:%v\n", gg.WordMasked)
+			return "", fmt.Errorf("you won")
 		}
 
 		reply += hangingArt[(len(hangingArt) - int(gg.RetryLeft) - 1)]
@@ -143,4 +145,35 @@ ____|____`,
     |      / \
     |
 ____|____`,
+}
+
+//checks if you lost
+func checkIfYouLost(err error) {
+	if fmt.Sprintf("%s", err) == "You Lost" {
+		fmt.Println("▓██   ██▓ ▒█████   █    ██    ▓█████▄  ██▓▓█████ ▓█████▄ ")
+		fmt.Println(" ▒██  ██▒▒██▒  ██▒ ██  ▓██▒   ▒██▀ ██▌▓██▒▓█   ▀ ▒██▀ ██▌")
+		fmt.Println("  ▒██ ██░▒██░  ██▒▓██  ▒██░   ░██   █▌▒██▒▒███   ░██   █▌")
+		fmt.Println("  ░ ▐██▓░▒██   ██░▓▓█  ░██░   ░▓█▄   ▌░██░▒▓█  ▄ ░▓█▄   ▌")
+		fmt.Println("  ░ ██▒▓░░ ████▓▒░▒▒█████▓    ░▒████▓ ░██░░▒████▒░▒████▓ ")
+		fmt.Println("   ██▒▒▒ ░ ▒░▒░▒░ ░▒▓▒ ▒ ▒     ▒▒▓  ▒ ░▓  ░░ ▒░ ░ ▒▒▓  ▒ ")
+		fmt.Println(" ▓██ ░▒░   ░ ▒ ▒░ ░░▒░ ░ ░     ░ ▒  ▒  ▒ ░ ░ ░  ░ ░ ▒  ▒ ")
+		fmt.Println(" ▒ ▒ ░░  ░ ░ ░ ▒   ░░░ ░ ░     ░ ░  ░  ▒ ░   ░    ░ ░  ░ ")
+		fmt.Println(" ░ ░         ░ ░     ░           ░     ░     ░  ░   ░    ")
+		fmt.Println(" ░ ░                           ░                  ░      ")
+		os.Exit(0)
+	}
+}
+
+//checks if you won
+func checkIfYouWin(err error) {
+	if fmt.Sprintf("%s", err) == "you won" {
+		fmt.Println("██╗   ██╗ ██████╗ ██╗   ██╗    ██╗    ██╗ ██████╗ ███╗   ██╗")
+		fmt.Println("╚██╗ ██╔╝██╔═══██╗██║   ██║    ██║    ██║██╔═══██╗████╗  ██║")
+		fmt.Println(" ╚████╔╝ ██║   ██║██║   ██║    ██║ █╗ ██║██║   ██║██╔██╗ ██║")
+		fmt.Println("  ╚██╔╝  ██║   ██║██║   ██║    ██║███╗██║██║   ██║██║╚██╗██║")
+		fmt.Println("   ██║   ╚██████╔╝╚██████╔╝    ╚███╔███╔╝╚██████╔╝██║ ╚████║")
+		fmt.Println("   ╚═╝    ╚═════╝  ╚═════╝      ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═══╝")
+		fmt.Println("                                                            ")
+		os.Exit(0)
+	}
 }

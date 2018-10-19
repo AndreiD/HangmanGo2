@@ -12,8 +12,9 @@ service Hangman {
 
 // Game Requests
 message GameRequest {
-	int32 Id = 1;
-	int32 RetryLimit=2;
+	int32 		Id = 1;
+	int32 		RetryLimit=2;
+	string 		PlayerId=3;
 }
 
 // You can have more games going on
@@ -29,12 +30,14 @@ message Game{
 	string 		Word=4;
 	string 		WordMasked=5;
 	repeated 	GuessRequest IncorrectGuesses=6;
-	bool 			Status=7;
+	string 		Status=7;  //won, lost, ongoing
+	string 		PlayerId=8;
 }
 
 
 // Requesting a guess
 message GuessRequest {
-	int32 	GameID = 1;
-	string 	Letter = 2;
+	int32 	  GameID = 1;
+	string 	  Letter = 2;
+	string 		PlayerId=3;
 }

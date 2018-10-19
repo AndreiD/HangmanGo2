@@ -39,13 +39,10 @@ func listGames(client api.HangmanClient) error {
 	}
 
 	if len(r.Game) > 0 {
-		output += "ID	Ongoing		Attempts Left	Hint \n"
+		output += "ID  | 	PlyerID  |  Ongoing  |  Attempts Left  |  Hint \n"
 		for _, v := range r.Game {
-			status := "          "
-			if v.Status {
-				status = "in progress"
-			}
-			output += fmt.Sprint(v.Id, "	", status, "	", v.RetryLeft, "		", v.WordMasked, "\n")
+			//TODO: this should be improved visually
+			output += fmt.Sprint(v.Id, "  	", v.PlayerId, "      ", v.Status, "	     ", v.RetryLeft, "	", v.WordMasked, "\n")
 		}
 	} else {
 		return errors.New("No saved games on the server")

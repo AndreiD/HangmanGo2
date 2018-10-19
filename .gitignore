@@ -3,8 +3,8 @@
 /build
 
 # server certificates
-server.csr
-server.key
+# server.csr
+# server.key
 
 # others
 .idea/

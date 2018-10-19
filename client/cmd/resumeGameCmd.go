@@ -29,7 +29,7 @@ var resumeGameCmd = &cobra.Command{
 				os.Exit(1)
 			}
 
-			fmt.Printf("Game Restarted.  Hint it's a %d letters word \n", len(game.WordMasked))
+			fmt.Printf("Game Resumed.  Hint it's a %d letters word \n", len(game.WordMasked))
 
 			OnGoingGame(game)
 
@@ -48,6 +48,7 @@ func init() {
 
 // resumes a game with id
 func resumeGame(client api.HangmanClient, id string) (*api.Game, error) {
+
 	_gameID, err := strconv.Atoi(id)
 	if err != nil {
 		return nil, errors.New("Game id should be a number")
@@ -55,7 +56,8 @@ func resumeGame(client api.HangmanClient, id string) (*api.Game, error) {
 
 	ctx, cancel := AppContext()
 	defer cancel()
-	game, err := client.ResumeGame(ctx, &api.GameRequest{Id: int32(_gameID)})
+	game, err := client.ResumeGame(ctx, &api.GameRequest{Id: int32(_gameID), PlayerId: Config.GetString("auth.username")})
+
 	if err != nil {
 		return nil, err
 	}

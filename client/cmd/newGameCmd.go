@@ -37,28 +37,11 @@ func init() {
 func newGame(client api.HangmanClient) (*api.Game, error) {
 	ctx, cancel := AppContext()
 	defer cancel()
-	r, err := client.NewGame(ctx, &api.GameRequest{RetryLimit: int32(Config.GetInt("game_difficulty"))})
+	r, err := client.NewGame(ctx, &api.GameRequest{PlayerId: Config.GetString("auth.username"), RetryLimit: int32(Config.GetInt("game_difficulty"))})
 	if err != nil {
 		return nil, err
 	}
 	fmt.Println("Client ready!")
 	fmt.Printf("Client difficulty configured to %d retries\n", Config.GetInt("game_difficulty"))
 	return r, nil
-}
-
-//checks if you lost
-func checkIfYouLost(err error) {
-	if fmt.Sprintf("%s", err) == "You Lost" {
-		fmt.Println("▓██   ██▓ ▒█████   █    ██    ▓█████▄  ██▓▓█████ ▓█████▄ ")
-		fmt.Println(" ▒██  ██▒▒██▒  ██▒ ██  ▓██▒   ▒██▀ ██▌▓██▒▓█   ▀ ▒██▀ ██▌")
-		fmt.Println("  ▒██ ██░▒██░  ██▒▓██  ▒██░   ░██   █▌▒██▒▒███   ░██   █▌")
-		fmt.Println("  ░ ▐██▓░▒██   ██░▓▓█  ░██░   ░▓█▄   ▌░██░▒▓█  ▄ ░▓█▄   ▌")
-		fmt.Println("  ░ ██▒▓░░ ████▓▒░▒▒█████▓    ░▒████▓ ░██░░▒████▒░▒████▓ ")
-		fmt.Println("   ██▒▒▒ ░ ▒░▒░▒░ ░▒▓▒ ▒ ▒     ▒▒▓  ▒ ░▓  ░░ ▒░ ░ ▒▒▓  ▒ ")
-		fmt.Println(" ▓██ ░▒░   ░ ▒ ▒░ ░░▒░ ░ ░     ░ ▒  ▒  ▒ ░ ░ ░  ░ ░ ▒  ▒ ")
-		fmt.Println(" ▒ ▒ ░░  ░ ░ ░ ▒   ░░░ ░ ░     ░ ░  ░  ▒ ░   ░    ░ ░  ░ ")
-		fmt.Println(" ░ ░         ░ ░     ░           ░     ░     ░  ░   ░    ")
-		fmt.Println(" ░ ░                           ░                  ░      ")
-		os.Exit(0)
-	}
 }
