@@ -5,12 +5,15 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"math/rand"
 	"strings"
 	"time"
 	"unicode/utf8"
 
 	"github.com/AndreiD/HangmanGo2/api"
+	"github.com/AndreiD/HangmanGo2/server/data"
+	"github.com/golang/protobuf/proto"
 )
 
 type hangman struct {
@@ -78,6 +81,15 @@ func (s *hangman) SaveGame(ctx context.Context, r *api.GameRequest) (*api.Game, 
 	if r.Id > 0 && int32(len(s.game)) > r.Id {
 		s.game[r.Id].Status = "ongoing"
 		gg := *s.game[r.Id]
+
+		// prepare for storage
+		marshaled, err := proto.Marshal(s.game[r.Id])
+		if err != nil {
+			log.Fatal("marshaling error: ", err)
+		}
+		DB := data.Init()
+		DB.Save(fmt.Sprint(r.Id), marshaled)
+
 		return &gg, nil
 	}
 	return nil, errors.New("Invalid Game ID")
