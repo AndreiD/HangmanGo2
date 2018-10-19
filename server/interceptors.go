@@ -31,7 +31,7 @@ func authenticateClient(ctx context.Context) (string, error) {
 		if clientPassword != "2k3jfeij324fds2!2q433@#$3" {
 			return "", fmt.Errorf("bad password %s", clientPassword)
 		}
-		log.Printf("Authenticated client: %s", clientLogin)
+		log.Printf("client: %s requested action", clientLogin)
 		return "1337", nil
 	}
 	return "", fmt.Errorf("missing credentials")

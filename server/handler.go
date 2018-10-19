@@ -29,7 +29,6 @@ func (s *hangman) NewGame(ctx context.Context, r *api.GameRequest) (*api.Game, e
 		return nil, fmt.Errorf("could not pick a word %s", err)
 	}
 	wordMAsked := strings.Repeat("_", utf8.RuneCountInString(word))
-	fmt.Printf("Word Masked is %s \n", wordMAsked)
 	GameID := int32(len(s.game))
 
 	if GameID == 0 {
@@ -63,6 +62,10 @@ func (s *hangman) ResumeGame(ctx context.Context, r *api.GameRequest) (*api.Game
 		}
 
 		s.game[r.Id].Status = "ongoing"
+
+		// everytime you resume, you lose a retry point
+		s.game[r.Id].RetryLeft = s.game[r.Id].RetryLeft - 1
+
 		d := *s.game[r.Id]
 		return &d, nil
 	}

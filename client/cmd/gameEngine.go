@@ -24,8 +24,11 @@ func OnGoingGame(game *api.Game) {
 			output, err := GuessLetter(hangmanClient, game, letter)
 			if err != nil {
 				// should move them away from errors!
+				game.Status = "lost"
 				checkIfYouLost(err)
+				game.Status = "won"
 				checkIfYouWin(err)
+				game.Status = "ongoing"
 				fmt.Println(err)
 			}
 			// save the game on errors
@@ -61,7 +64,8 @@ func GuessLetter(client api.HangmanClient, g *api.Game, l string) (string, error
 
 		//refactor this to a normal message, not error
 		if gg.RetryLeft < 1 {
-			return "", errors.New("You Lost. Correct word was: " + g.Word)
+			fmt.Printf("\nYou failed to guess: %s\n\n", g.Word)
+			return "", errors.New("you lost")
 		}
 
 		if strings.Index(gg.WordMasked, "_") == -1 {
@@ -149,7 +153,7 @@ ____|____`,
 
 //checks if you lost
 func checkIfYouLost(err error) {
-	if fmt.Sprintf("%s", err) == "You Lost" {
+	if strings.Contains(fmt.Sprintf("%s", err), "you lost") {
 		fmt.Println("▓██   ██▓ ▒█████   █    ██    ▓█████▄  ██▓▓█████ ▓█████▄ ")
 		fmt.Println(" ▒██  ██▒▒██▒  ██▒ ██  ▓██▒   ▒██▀ ██▌▓██▒▓█   ▀ ▒██▀ ██▌")
 		fmt.Println("  ▒██ ██░▒██░  ██▒▓██  ▒██░   ░██   █▌▒██▒▒███   ░██   █▌")
@@ -166,7 +170,7 @@ func checkIfYouLost(err error) {
 
 //checks if you won
 func checkIfYouWin(err error) {
-	if fmt.Sprintf("%s", err) == "you won" {
+	if strings.Contains(fmt.Sprintf("%s", err), "you won") {
 		fmt.Println("██╗   ██╗ ██████╗ ██╗   ██╗    ██╗    ██╗ ██████╗ ███╗   ██╗")
 		fmt.Println("╚██╗ ██╔╝██╔═══██╗██║   ██║    ██║    ██║██╔═══██╗████╗  ██║")
 		fmt.Println(" ╚████╔╝ ██║   ██║██║   ██║    ██║ █╗ ██║██║   ██║██╔██╗ ██║")
