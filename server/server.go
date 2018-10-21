@@ -64,7 +64,7 @@ func startGRPCServer(config *viper.Viper, certFile, keyFile string) error {
 		signal.Notify(sigs, syscall.SIGTERM, syscall.SIGINT)
 		<-sigs
 		// cleanup here
-		s.GracefulStop()
+		grpcServer.GracefulStop()
 	}()
 
 	fmt.Println(" ")

@@ -18,10 +18,9 @@ func OnGoingGame(game *api.Game) {
 		fmt.Print("Enter a letter: ")
 		letter, _ := reader.ReadString('\n')
 		letter = strings.TrimSpace(letter)
-		fmt.Println(">> you entered: " + letter)
 
 		if utils.IsLetter(letter) {
-			output, err := GuessLetter(hangmanClient, game, letter)
+			output, err := GuessALetter(hangmanClient, game, letter)
 			if err != nil {
 				// should move them away from errors!
 				game.Status = "lost"
@@ -45,40 +44,38 @@ func OnGoingGame(game *api.Game) {
 
 }
 
-// GuessLetter is the main logic of the game.
-func GuessLetter(client api.HangmanClient, g *api.Game, l string) (string, error) {
+// GuessALetter is the main logic of the game.
+func GuessALetter(client api.HangmanClient, game *api.Game, letter string) (string, error) {
 
 	var reply string
 
-	if len(l) != 1 {
-		return "Please provide a single letter", nil
-	}
 	ctx, cancel := AppContext()
 	defer cancel()
 
-	if g.Id > 0 {
-		gg, err := client.GuessLetter(ctx, &api.GuessRequest{GameID: g.Id, Letter: l})
+	if game.Id > 0 {
+		nGame, err := client.GuessLetter(ctx, &api.GuessRequest{GameID: game.Id, Letter: letter})
 		if err != nil {
 			return "", err
 		}
 
 		//refactor this to a normal message, not error
-		if gg.RetryLeft < 1 {
-			fmt.Printf("\nYou failed to guess: %s\n\n", g.Word)
+		if nGame.RetryLeft < 1 {
+			fmt.Printf("\nYou failed to guess: %s  See more here: https://en.wikipedia.org/wiki/%s \n\n", game.Word, game.Word)
 			return "", errors.New("you lost")
 		}
 
-		if strings.Index(gg.WordMasked, "_") == -1 {
+		// should move this one to a single method
+		if strings.Index(nGame.WordMasked, "_") == -1 {
 			return "", fmt.Errorf("you won")
 		}
 
-		reply += hangingArt[(len(hangingArt) - int(gg.RetryLeft) - 1)]
-		reply += fmt.Sprintf("\nRemaining attempts: %v", gg.RetryLeft)
+		reply += hangingArt[(len(hangingArt) - int(nGame.RetryLeft) - 1)]
+		reply += fmt.Sprintf("\nRemaining attempts: %v", nGame.RetryLeft)
 		reply += ("\nIncorrect attempts: ")
-		for _, v := range gg.IncorrectGuesses {
+		for _, v := range nGame.IncorrectGuesses {
 			reply += fmt.Sprint(v.Letter, " ")
 		}
-		reply += fmt.Sprint("\nWord hint:", gg.WordMasked)
+		reply += fmt.Sprint("\nWord hint:", nGame.WordMasked)
 	} else {
 		return "", errors.New("Invalid Game ID")
 	}

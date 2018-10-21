@@ -95,7 +95,7 @@ func (s *hangman) SaveGame(ctx context.Context, r *api.GameRequest) (*api.Game, 
 	return nil, errors.New("Invalid Game ID")
 }
 
-// GuessLetter guesses a letter
+// GuessLetter guesses a lett
 func (s *hangman) GuessLetter(ctx context.Context, r *api.GuessRequest) (*api.Game, error) {
 
 	if r.GameID > 0 && int32(len(s.game)) > r.GameID {
