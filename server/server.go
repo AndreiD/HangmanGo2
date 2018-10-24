@@ -3,10 +3,7 @@ package main
 import (
 	"fmt"
 	"net"
-	"os"
-	"os/signal"
 	"strconv"
-	"syscall"
 
 	"github.com/AndreiD/HangmanGo2/api"
 	"github.com/AndreiD/HangmanGo2/server/configs"
@@ -57,15 +54,6 @@ func startGRPCServer(config *viper.Viper, certFile, keyFile string) error {
 
 	// attach the Ping service to the server
 	api.RegisterHangmanServer(grpcServer, &hangman{})
-
-	// graceful shutdown
-	go func() {
-		sigs := make(chan os.Signal, 1)
-		signal.Notify(sigs, syscall.SIGTERM, syscall.SIGINT)
-		<-sigs
-		// cleanup here
-		grpcServer.GracefulStop()
-	}()
 
 	fmt.Println(" ")
 	fmt.Println("██╗  ██╗ █████╗ ███╗   ██╗ ██████╗ ███╗   ███╗ █████╗ ███╗   ██╗")

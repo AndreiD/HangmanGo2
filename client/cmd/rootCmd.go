@@ -9,12 +9,12 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 
-	"github.com/spf13/viper"
-
 	"github.com/AndreiD/HangmanGo2/api"
 	"github.com/AndreiD/HangmanGo2/client/configs"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/balancer/roundrobin"
 	"google.golang.org/grpc/credentials"
 )
 
@@ -67,6 +67,7 @@ func init() {
 	dialOpts := []grpc.DialOption{}
 	dialOpts = append(dialOpts, grpc.WithTransportCredentials(creds))
 	dialOpts = append(dialOpts, grpc.WithPerRPCCredentials(&auth))
+	dialOpts = append(dialOpts, grpc.WithBalancerName(roundrobin.Name))
 
 	ctx, cancel := AppContext()
 	defer cancel()

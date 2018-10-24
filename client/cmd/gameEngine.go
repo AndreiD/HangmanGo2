@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/AndreiD/HangmanGo2/api"
-	"github.com/AndreiD/HangmanGo2/client/utils"
 )
 
 // OnGoingGame this waiting for you to win or lose it
@@ -19,7 +18,7 @@ func OnGoingGame(game *api.Game) {
 		letter, _ := reader.ReadString('\n')
 		letter = strings.TrimSpace(letter)
 
-		if utils.IsLetter(letter) {
+		if isLetter(letter) {
 			output, err := GuessALetter(hangmanClient, game, letter)
 			if err != nil {
 				// should move them away from errors!
@@ -177,4 +176,22 @@ func checkIfYouWin(err error) {
 		fmt.Println("                                                            ")
 		os.Exit(0)
 	}
+}
+
+// IsLetter checks if it's a letter
+// this is also checked on the server side too, but well behaving client should not burden the server
+func isLetter(s string) bool {
+
+	//should be just one
+	if len(s) > 1 {
+		return false
+	}
+
+	//should not be a strange character
+	for _, r := range s {
+		if (r < 'a' || r > 'z') && (r < 'A' || r > 'Z') {
+			return false
+		}
+	}
+	return true
 }
