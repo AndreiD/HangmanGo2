@@ -19,7 +19,7 @@ Flags:
   -h, --help   help for Hangman
   ~~~~
 
-### The "Arhitecture" :)
+### The "Arhitecture"
 
 - gRPC (why: since it doesn't involve any web interface, gRPC is currently the best)
 - Server: keeps track of the games
